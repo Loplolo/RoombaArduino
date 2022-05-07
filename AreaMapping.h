@@ -11,6 +11,7 @@ class Segment{
             Point in, fin;
             int a, b, c;
         public:
+            Segment(){}
             Segment(Point p1, Point p2){
                 coord_t x1 = p1.x, y1 = p1.y;
                 coord_t x2 = p2.x, y2 = p2.y;
@@ -73,10 +74,9 @@ class Segment{
         };
 
 class Polygon{
-    protected:
+    protected:\
         std::vector<Segment> perimeter;
     public:
-        std::string valid_area = "inside";
     Polygon(){};
     explicit Polygon(std::vector<Point> points){
             points.insert(points.end(), points.operator[](0));
@@ -96,6 +96,24 @@ class Polygon{
             return perimeter;
         }
 
+        bool isInside(Point point, int diameter){
+            int count = 0;
+            Segment s = Segment(Point(point.x, point.y), Point(+100, point.y) );
+            for (Segment &w : perimeter){
+                if(w.dist(point) < diameter){
+                    return false;
+                }
+                if (w.onSegment(point)){
+                    return false;
+                }
+                if(w.doIntersect(s)){
+                    count++;
+                };
+            }
+            if(count%2 == 0){
+                return false;
+            }
+    }
         Segment closest(Point point){
             //segmento più vicino al punto
             Segment min = perimeter.operator[](0);
@@ -123,53 +141,21 @@ class MapArea{
         }
 
         bool validPoint(Point point, int diameter){
-            Segment s = Segment(Point(point.x, point.y), Point(+100, point.y) );
-            /*
-             1) Draw a horizontal line to the right of each point and extend it to infinity
-
-            1) Count the number of times the line intersects with polygon edges.
-
-            2) A point is inside the polygon if either count of intersections is odd or
-               point lies on an edge of polygon.  If none of the conditions is true, then
-               point lies outside.
-             */
-            int count = 0;
-            for (Segment &w : walls.getPerimeter()){
-                if(w.dist(point) < diameter){
-                    return false;
-                }
-                if (w.onSegment(point)){
-                    return false;
-                }
-                if(w.doIntersect(s)){
-                    count++;
-                };
-            }
-            if(count%2 == 0){
+            if(!walls.isInside(point, diameter)){
                 return false;
             }
             int i = 0;
             if(!obstacles.empty()) {
                 while (i < obstacles.size()) {
-                    count = 0, i = 0;
-                    for (Segment &w: obstacles.operator[](i).getPerimeter()) {
-                        if (w.onSegment(point)) {
-                            return false;
-                        }
-                        if (w.doIntersect(s)) {
-                            count++;
-                        }
-                    }
-                    if (count % 2 == 1) {
-                        return false;
-                    }
+                    if(obstacles.operator[](i).isInside(point, diameter)){
+                       return false;
+                    };
                     i++;
                 }
             }
             return true;
         }
 };
-
 
 
 #endif
