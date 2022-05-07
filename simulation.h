@@ -18,12 +18,15 @@ class Roomba{
             b.x += position.x;
             b.y += position.y;
             Segment s = Segment(position, b);
-            if(mapArea.validPoint(b)){
-                //Imposto l'output al punto dove si muove
+            if(mapArea.validPoint(b, diameter)){
                 position = b;
                 return b;
             }else{
-                //trovo un punto nel segmento s valido -> implemento pathfinding
+                //trovo un punto nel segmento s valido
+                //trovo un punto sul segmento s la cui distanza dal segmento che interseca è almeno 11cm
+
+
+                return Point(0,0);
             };
         }
 
