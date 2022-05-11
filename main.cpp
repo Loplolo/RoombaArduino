@@ -9,7 +9,7 @@
 
 
 int main(){
-        srand(time(NULL));
+        srand(time(nullptr));
         std::vector<Point> points(100);
         for(int i =0; i<100; i++){
             coord_t x = rand() % 100 ;

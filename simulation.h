@@ -3,6 +3,7 @@
 
 #include "ConvexHull.h"
 #include "AreaMapping.h"
+
 class Roomba{
 
     private:
@@ -10,23 +11,26 @@ class Roomba{
         Point position = Point(0,0);
         MapArea mapArea;
     public:
-        Roomba(MapArea m, int d){
+        Roomba(MapArea& m, int d){
             mapArea = m;
             diameter = d;
         }
-        Point move(Point b){
+        Point Pathfinding(Point& b){
+
+        }
+        Point move(Point& b){
             b.x += position.x;
             b.y += position.y;
             Segment s = Segment(position, b);
             if(mapArea.validPoint(b, diameter)){
                 position = b;
+                //Trova i punti per muoversi intorno agli eventuali ostacoli
+                //checka col segmento s gli ostacoli
                 return b;
             }else{
-                //trovo un punto nel segmento s valido
-                //trovo un punto sul segmento s la cui distanza dal segmento che interseca è almeno 11cm
-
-
-                return Point(0,0);
+                // Avvicinati al muro senza toccarlo
+                // Runna un'altra scansione
+                return {0,0};
             };
         }
 

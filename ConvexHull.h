@@ -24,7 +24,7 @@ struct Point {
 		return x < p.x || (x == p.x && y < p.y);
 	}
 
-	const std::string tostring(){
+	const std::string tostring() const{
 		return "X: " + std::to_string(x) + " Y: " + std::to_string(y) + "\n";
 	}
 };

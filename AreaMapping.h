@@ -7,24 +7,23 @@
 #include "ConvexHull.h"
 
 class Segment{
-        private:
+        public:
             Point in, fin;
             int a, b, c;
-        public:
+
             Segment(){}
-            Segment(Point p1, Point p2){
+            Segment(Point& p1, Point& p2){
                 coord_t x1 = p1.x, y1 = p1.y;
                 coord_t x2 = p2.x, y2 = p2.y;
                 a = y2 - y1; b = x1 - x2;
                 c = x1*(y1 - y2) + y1*(x2 - x1);
                 in = p1; fin = p2;
             }
-
-            int dist(Point p0){
+            int dist(Point& p0){
                 return abs(a*p0.x + b*p0.y + c) / (sqrt(pow(a,2) + pow(b,2)));
             }
 
-        bool onSegment(Point q)
+        bool onSegment(Point& q)
         {
             if (q.x <= std::max(in.x, fin.x) && q.x >= std::min(in.x, fin.x) &&
                 q.y <= std::max(in.y, fin.y) && q.y >= std::min(in.y, fin.y))
@@ -32,7 +31,7 @@ class Segment{
 
             return false;
         }
-        static int orientation(Point p, Point q, Point r)
+        static int orientation(Point& p, Point& q, Point& r)
         {
             // See https://www.geeksforgeeks.org/orientation-3-ordered-points/
             int val = (q.y - p.y) * (r.x - q.x) -
@@ -42,19 +41,19 @@ class Segment{
 
             return (val > 0)? 1: 2;
         }
-        bool doIntersect(Segment s)
+        bool doIntersect(Segment& s)
         {
 
-            int o1 = orientation(in, fin, s.getInizio());
-            int o2 = orientation(in, fin, s.getFine());
-            int o3 = orientation(s.getInizio(), s.getFine(), in);
-            int o4 = orientation(s.getInizio(), s.getFine(), fin);
+            int o1 = orientation(in, fin,s.in );
+            int o2 = orientation(in, fin, s.fin);
+            int o3 = orientation(s.in, s.fin, in);
+            int o4 = orientation(s.in, s.fin, fin);
 
             if (o1 != o2 && o3 != o4)
                 return true;
 
-            if (o1 == 0 && onSegment(s.getInizio())) return true;
-            if (o2 == 0 && onSegment(s.getFine())) return true;
+            if (o1 == 0 && onSegment(s.in)) return true;
+            if (o2 == 0 && onSegment(s.fin)) return true;
             if (o3 == 0 && s.onSegment(in)) return true;
             if (o4 == 0 && s.onSegment(fin)) return true;
 
@@ -64,12 +63,7 @@ class Segment{
     std::string tostring(){
                 return "\nInizio: " + in.tostring() + "Fine: " + fin.tostring() + "\n" + "a: " + std::to_string(a) + " b: " + std::to_string(b) + " c: " + std::to_string(c) + "\n-----------------\n";
             }
-            Point getInizio(){
-                return in;
-            }
-            Point getFine(){
-                return fin;
-            }
+
 
         };
 
@@ -98,7 +92,8 @@ class Polygon{
 
         bool isInside(Point point, int diameter){
             int count = 0;
-            Segment s = Segment(Point(point.x, point.y), Point(+100, point.y) );
+            Point INF = Point(+100, point.y);
+            Segment s = Segment( point, INF );
             for (Segment &w : perimeter){
                 if(w.dist(point) < diameter){
                     return false;
@@ -114,7 +109,7 @@ class Polygon{
                 return false;
             }
     }
-        Segment closest(Point point){
+        Segment closest(Point& point){
             //segmento più vicino al punto
             Segment min = perimeter.operator[](0);
             for(auto &s : perimeter){
@@ -132,15 +127,15 @@ class MapArea{
         std::vector<Polygon> obstacles;
         MapArea(){};
 
-        MapArea(Polygon w){
+        MapArea(Polygon& w){
             walls = w;
         }
-        MapArea(Polygon w, std::vector<Polygon> obst ){
+        MapArea(Polygon& w, std::vector<Polygon> obst ){
             walls = w;
             obstacles = obst;
         }
 
-        bool validPoint(Point point, int diameter){
+        bool validPoint(Point& point, int diameter){
             if(!walls.isInside(point, diameter)){
                 return false;
             }
